@@ -1,0 +1,36 @@
+:root {
+  --main-purple: #5D0064;
+  --main-light-blue: #7ebdc2;
+  --main-blue: #235789;
+  --main-grey: #998da0;
+  --main-red: #bb4430;
+}
+
+.overlay-div {
+  background-color: var(--main-purple);
+  bottom: 100px;
+  padding: 5px 0px;
+  position: fixed;
+  right: 25px;
+  width: 155px;
+  z-index: 100000000000000000000000000;
+}
+
+.mouse-track {
+  text-align: center;
+}
+
+.overlay-div h3, .overlay-div p, .overlay-div * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.overlay-div h3 {
+  font-size: 16px;
+  padding: 0 5px;
+}
+
+.overlay-div p {
+  text-align: center;
+}
