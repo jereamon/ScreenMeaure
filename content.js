@@ -9,7 +9,8 @@ let keyComboObj = {m: false, d: false, f: false, c: false},
       mouseGrab = false,
       mousePos = [],
       mousePosOrig = 0,
-      knownValue = 10,
+      knownFeet = 10,
+      knownInches = 0,
       pxToFeet = 0;
 
 
@@ -19,7 +20,7 @@ function afterDOMLoaded() {
     if (e.key == "d") {
       keyComboObj["d"] = true;
       checkKeyCombo();
-      console.log("D PRESSED")
+      
     } else if (e.key == "f") {
       keyComboObj["f"] = true;
       checkKeyCombo();
@@ -75,7 +76,6 @@ function afterDOMLoaded() {
         mousePos.push(e.clientY);
 
         console.log("MOUSE POSITION 2 CAPTURED");
-        console.log(Math.abs(mousePos[0] - mousePos[2]));
 
         if (!mousePosOrig) {
           clickOrigConfTwo.innerText = "☑";
@@ -83,14 +83,32 @@ function afterDOMLoaded() {
           clickConfTwo.innerText = "☑";
         } 
 
+        // Set the distance measured in pixels using the distance formula
+        measuredPix = Math.sqrt((Math.abs(mousePos[2] - mousePos[0]) ** 2) + (Math.abs(mousePos[3] - mousePos[1]) ** 2));
 
+        // once the measured distance is determined we check if the original mouse position
+        // is set. If it is not set it, if it is, then calculate the measured 
+        // distance as ft & inches and report them.
         if (!mousePosOrig) {
-          mousePosOrig = Math.abs(mousePos[0] - mousePos[2])
+          mousePosOrig = measuredPix;
         } else {
-          console.log("Mouse distance to feet:");
-          console.log((Math.abs(mousePos[0] - mousePos[2]) / mousePosOrig) * knownValue);
+          // console.log("Mouse distance to feet:");
 
-          overlayMeasurement.innerText = (Math.round((Math.abs(mousePos[0] - mousePos[2]) / mousePosOrig) * knownValue * 100)) / 100
+          knownAsDecimal = knownFeet + (knownInches / 12);
+          measuredRatioPix = measuredPix / mousePosOrig;
+
+          measuredFtDecimal = measuredRatioPix * knownAsDecimal;
+          
+          measuredFt = Math.floor(measuredFtDecimal);
+          
+          measuredIn = Math.round(Math.abs(Math.floor(measuredFtDecimal) - measuredFtDecimal) * 12)
+          if (measuredIn == 12) {
+            measuredFt = measuredFt + 1;
+            measuredIn = 0;
+          }
+
+          overlayFeet.innerText = measuredFt;
+          overlayInches.innerText = measuredIn;
         }
           
 
@@ -114,7 +132,14 @@ function afterDOMLoaded() {
     }
     else if (keyComboObj["m"] == true && keyComboObj["c"] == true) {
       console.log("\nMOUSE POS ORIGINAL CANCELLED");
+
+      clickOrigConfOne.innerText = "☐";
+      clickOrigConfTwo.innerText = "☐";
+      clickConfOne.innerText = "☐";
+      clickConfTwo.innerText = "☐";
+
       mousePosOrig = 0;
+      mousePos = [];
     }
   }
 
@@ -123,8 +148,10 @@ function afterDOMLoaded() {
   let overlayDiv = document.createElement("div"),
       overlayHeader = document.createElement("h3"),
       overlayMeasContainer = document.createElement("p"),
-      overlayMeasurement = document.createElement("span"),
-      overlayUnit = document.createElement("span");
+      overlayFeet = document.createElement("span"),
+      overlayInches = document.createElement("span"),
+      overlayUnitFt = document.createElement("span"),
+      overlayUnitIn = document.createElement("span");
 
   let mouseTrack = document.createElement("div");
   mouseTrack.classList.add("mouse-track")
@@ -140,7 +167,13 @@ function afterDOMLoaded() {
       clickConfOne = document.createElement("span"),
       clickConfTwo = document.createElement("span");
 
-  clickOrigConfText.innerText = "Start Measurement: ";
+
+  clickOrigConfOne.classList.add("click-conf");
+  clickOrigConfTwo.classList.add("click-conf");
+  clickConfOne.classList.add("click-conf");
+  clickConfTwo.classList.add("click-conf");
+
+  clickOrigConfText.innerText = "Start Clicks: ";
   clickOrigConfOne.innerText = "☐";
   clickOrigConfTwo.innerText = "☐";
 
@@ -148,7 +181,7 @@ function afterDOMLoaded() {
   clickOrigConfContainer.appendChild(clickOrigConfOne);
   clickOrigConfContainer.appendChild(clickOrigConfTwo);
 
-  clickConfText.innerText = "Check Measurement: ";
+  clickConfText.innerText = "Check Clicks: ";
   clickConfOne.innerText = "☐";
   clickConfTwo.innerText = "☐";
 
@@ -161,11 +194,15 @@ function afterDOMLoaded() {
 // END CLICK CONFIRMATION
 
   overlayHeader.innerText = "Measurement:";
-  overlayMeasurement.innerText = "0";
-  overlayUnit.innerText = "'";
+  overlayFeet.innerText = "0";
+  overlayInches.innerText = "0"
+  overlayUnitFt.innerText = "'";
+  overlayUnitIn.innerText = '"';
 
-  overlayMeasContainer.appendChild(overlayMeasurement);
-  overlayMeasContainer.appendChild(overlayUnit);
+  overlayMeasContainer.appendChild(overlayFeet);
+  overlayMeasContainer.appendChild(overlayUnitFt);
+  overlayMeasContainer.appendChild(overlayInches);
+  overlayMeasContainer.appendChild(overlayUnitIn);
 
   mouseTrack.innerText = "m+d to START tracking";
   mouseTrack.style.color = "#bb4430";
@@ -183,9 +220,10 @@ function afterDOMLoaded() {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request) {
-    if (request.knownValue) {
-      console.log(request.knownValue);
-      knownValue = parseInt(request.knownValue);
+    if (request.knownFeet) {
+      
+      knownFeet = parseInt(request.knownFeet);
+      knownInches = parseInt(request.knownInches);
     }
   }
 })

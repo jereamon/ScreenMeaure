@@ -8,28 +8,27 @@ function afterDOMLoaded() {
   var port = chrome.extension.connect({
     name: "sample communication"
   });
-  // port.postMessage("Hi background from popup");
-  // port.onMessage.addListener(function(msg) {
-  //   if (msg == "Hi popup") {
-  //     console.log("message received from background");
-  //   }
-  // })
 
   let selectedUnit = "f",
   knownValue = 10;
 
   let radioButtons = document.querySelectorAll(".unit-container input"),
-      knownValueObj = document.querySelector("#known-value");
+      knownFeetObj = document.querySelector("#known-feet"),
+      knownInchesObj = document.querySelector("#known-inches");
   // radioButtons.forEach(function(radioButton) {
   //   radioButton.addEventListener('click', function() {
 
   //   })
   // })
 
-  knownValueObj.addEventListener("input", function() {
-    knownValue = knownValueObj.value;
-    console.log("INPUT")
-    chrome.runtime.sendMessage({ knownValue: knownValueObj.value});
+  knownFeetObj.addEventListener("input", function() {
+    console.log("INPUT FEET")
+    chrome.runtime.sendMessage({ knownFeet: knownFeetObj.value, knownInches: knownInchesObj.value});
+  });
+
+  knownInchesObj.addEventListener("input", function() {
+    console.log("INPUT INCHES")
+    chrome.runtime.sendMessage({ knownFeet: knownFeetObj.value, knownInches: knownInchesObj.value});
   });
 
   chrome.runtime.sendMessage({ needValue: "please"}, (response) => {
@@ -37,8 +36,11 @@ function afterDOMLoaded() {
     if (response) {
       console.log("RECEIVED VALUE")
       // console.log(response);
-      knownValue = response.knownValue;
-      knownValueObj.value = knownValue;
+      knownFeet = response.knownFeet;
+      knownFeetObj.value = knownFeet;
+
+      knownInches = response.knownInches;
+      knownInchesObj.value = knownInches;
     }
   });
 
