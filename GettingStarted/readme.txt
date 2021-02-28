@@ -5,7 +5,8 @@ To Install:
     somewhere out of the way.
 2. Open chrome and click the extensions icon (jigsaw piece near settings)
 3. Click manage extensions
-4. Click Load unpacked and select the screen_measure_extension folder
+4. Turn on developer mode
+5. Click Load unpacked and select the screen_measure_extension folder
 
 
 To Use:

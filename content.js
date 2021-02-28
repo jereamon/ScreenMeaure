@@ -109,6 +109,11 @@ function afterDOMLoaded() {
 
           overlayFeet.innerText = measuredFt;
           overlayInches.innerText = measuredIn;
+
+          setTimeout(function() {
+            clickConfOne.innerText = "☐";
+            clickConfTwo.innerText = "☐";
+          }, 2000);
         }
           
 
